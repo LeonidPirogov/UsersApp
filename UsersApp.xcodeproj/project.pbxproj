@@ -14,7 +14,7 @@
 		B30F56732E5E3D980060D189 /* Exceptions for "UsersApp" folder in "UsersApp" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
-				Info.plist,
+				App/Info.plist,
 			);
 			target = B30F56602E5E3D960060D189 /* UsersApp */;
 		};
@@ -147,7 +147,7 @@
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = 2F54D8859X;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_FILE = UsersApp/Info.plist;
+				INFOPLIST_FILE = UsersApp/App/Info.plist;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
 				INFOPLIST_KEY_UIMainStoryboardFile = Main;
@@ -180,7 +180,7 @@
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = 2F54D8859X;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_FILE = UsersApp/Info.plist;
+				INFOPLIST_FILE = UsersApp/App/Info.plist;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
 				INFOPLIST_KEY_UIMainStoryboardFile = Main;
