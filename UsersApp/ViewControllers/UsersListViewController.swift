@@ -10,12 +10,25 @@ import UIKit
 final class UsersListViewController: UITableViewController {
     
     private var users: [User] = []
+    private let spinner = UIActivityIndicatorView(style: .medium)
+    
 
     override func viewDidLoad() {
         super.viewDidLoad()
         tableView.rowHeight = 80
+        
+        spinner.hidesWhenStopped = true
+        tableView.backgroundView = spinner
+        
+        refreshControl = UIRefreshControl()
+        refreshControl?.addTarget(self, action: #selector(refresh), for: .valueChanged)
+        
         loadUsers()
     }
+    
+    @objc private func refresh() {
+            loadUsers()
+        }
     
     // MARK: - Table view data source
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
@@ -40,20 +53,24 @@ final class UsersListViewController: UITableViewController {
            let indexPath = tableView.indexPathForSelectedRow {
                 detailVC.user = users[indexPath.row]
             }
-        
     }
 }
 
 // MARK: - Networking
 private extension UsersListViewController {
     func loadUsers() {
+        if !(refreshControl?.isRefreshing ?? false) { spinner.startAnimating() }
+
         NetworkManager.shared.fetchUsers { [weak self] result in
             DispatchQueue.main.async {
+                guard let self else { return }
+                self.spinner.stopAnimating()
+                self.refreshControl?.endRefreshing()
+
                 switch result {
                 case .success(let users):
-                    print(users.count)
-                    self?.users = users
-                    self?.tableView.reloadData()
+                    self.users = users
+                    self.tableView.reloadData()
                 case .failure(let error):
                     print("❌ Error:", error)
                 }

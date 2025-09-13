@@ -6,11 +6,12 @@
 //
 
 import Foundation
+import Alamofire
 
 enum NetworkError: Error {
-    case invalidURL
+    case requestFailed(AFError)
     case noData
-    case decodingError
+    case parsingError
 }
 
 final class NetworkManager {
@@ -18,29 +19,27 @@ final class NetworkManager {
     private init() {}
     
     func fetchUsers(completion: @escaping (Result<[User], NetworkError>) -> Void) {
-        guard let url = URL(string: "https://jsonplaceholder.typicode.com/users") else {
-            completion(.failure(.invalidURL))
-            return
-        }
+        let url = "https://jsonplaceholder.typicode.com/users"
         
-        URLSession.shared.dataTask(with: url) { data, _, error in
-            
-            if error != nil {
-                completion(.failure(.noData))
-                return
+        AF.request(url).validate(statusCode: 200..<300).responseData { response in
+            switch response.result {
+            case .failure(let afError):
+                completion(.failure(.requestFailed(afError)))
+            case .success(let data):
+                do {
+                    let jsonObject = try JSONSerialization.jsonObject(with: data, options: [])
+                    
+                    guard let array = jsonObject as? [[String: Any]] else {
+                        completion(.failure(.parsingError))
+                        return
+                    }
+                    
+                    let users = array.map { User(userDetails: $0) }
+                    completion(.success(users))
+                } catch {
+                    completion(.failure(.parsingError))
+                }
             }
-            
-            guard let data = data else {
-                completion(.failure(.noData))
-                return
-            }
-            
-            do {
-                let users = try JSONDecoder().decode([User].self, from: data)
-                completion(.success(users))
-            } catch {
-                completion(.failure(.decodingError))
-            }
-        }.resume()
+        }
     }
 }
